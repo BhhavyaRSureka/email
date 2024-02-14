@@ -7,6 +7,7 @@
 const hyperquest = require('hyperquest');
 const bl = require('bl');
 const qs = require('querystring');
+const addRoute = require('../add-route');
 jest.mock('../add-route');
  // Assuming the test file is in the update/__tests__ folder
 
@@ -49,11 +50,13 @@ describe('addRoute', () => {
       }
     };
 
-    testData.mockImplementation = (_, callback) => {
+    const mockImplementation = (domain, creds, description, expression, actions, callback) => {
       // Simulate an async success response
       process.nextTick(() => callback(null, Buffer.from('Route added successfully')));
     };
     
+    addRoute.mockImplementation(mockImplementation);
+
     addRoute(testData.domain, testData.creds, testData.description, testData.expression, testData.actions, mockCallback);
   });
 
@@ -68,10 +71,12 @@ describe('addRoute', () => {
       }
     };
 
-    testData.mockImplementation = (_, callback) => {
+    const mockImplementation = (domain, creds, description, expression, actions, callback) => {
       // Simulate an async error response
       process.nextTick(() => callback(new Error('Error adding route')));
     };
+
+    addRoute.mockImplementation(mockImplementation);
 
     addRoute(testData.domain, testData.creds, testData.description, testData.expression, testData.actions, mockCallback);
   });
